@@ -36,6 +36,15 @@ class spectrum():
         for x in range(len(final)):
             if len(final[x][4])>1:
             	final[x].insert(4,0)
+        if final[1][
+            
+        for x in range(len(final)):
+            if final[x][5].count('.') > 1:
+                pos = final[x][5].rfind('.')
+                keep = final[x][5][:pos]
+                toapp = final[x][5][pos:]
+                final[x][5] = keep
+                final[x].insert(6, toapp)
         return final
 
     def stuff(self):

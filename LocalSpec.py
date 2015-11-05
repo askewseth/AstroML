@@ -1,8 +1,14 @@
-import os, pyfits, math
+import os
+import pyfits
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 
 class spectrum():
+    """
+    Spectrum object initialized with file path.
+    Contains get methods for 
+    """
     def __init__(self, path):
         self.f = pyfits.open(path)
         self.head = self.f[0].header
@@ -12,7 +18,9 @@ class spectrum():
         self.hjd = self.head['HJD']
         self.fullwl = self.getFullWL()
         self.getWLArr()
-
+        self.vhel = self.head['VHELIO']
+        self.stararr = self.getStarArr()
+        
     def getWLArr(self):
         wat2 = []
         for key in self.head.keys():
@@ -26,7 +34,7 @@ class spectrum():
         specend2 = []
         for x in range(len(specend)):
             if specend[x][0] in ['0','1','2','3','4','5', '6', '7'
-                                 ,'8', '9']:  #Extra zero????
+                                 ,'8', '9']:  
                 specend2.append(specend[x])
         final = [] #Contains w.l. info as 2D array
         for x in range(len(specend2)):
@@ -52,28 +60,42 @@ class spectrum():
             step.append(float(o[6]))
         newLast = ( 1149 * step[-1] ) + wli[-1]
         self.last = newLast
-        wlarr = zip(order, wli, step)
+        wlarr = [order, wli, step]
         return wlarr
 
     def getFullWL(self):
         larray = []
-        for y in xrange(len(self.wlarr)): #extra wl for end
+        for y in range(len(self.wlarr[0])): #extra wl for end
             ls= []
-            for x in xrange(1149):
-                ls.append(self.wlarr[y][1] + ( x * self.wlarr[y][2] ) )
+            for x in range(1149):
+                ls.append(self.wlarr[1][y] + ( x * self.wlarr[2][y] ) )
             larray.append(ls)
         #Correction for 6th order issues
         
         return larray
 
+    def getStarArr(self):
+        d = self.date
+        h = self.hjd
+        v = self.vhel
+        bint = None   #self.bintensity
+        dint = None   #self.depintensity
+        rint = None   #self.rintensity
+        bwl = None    #self.bwavelength
+        dwl = None    #self.depwavelength
+        rwl = None    #self.rwavelength
+        return [d,h,v,bint,dint,rint,bwl,dwl,rwl]
+    
+
     def findHA(self, ha = 6562, show = False):
         haord = -1
         initialwl =[self.wlarr[x][1] for x in range(len(self.wlarr))]
         initialwl.append(self.last)
-        initialwl = map(str, initialwl)
+        tmp = [str(x) for x in initialwl]
+        initialwl = tmp
         for x in range(len(initialwl)-1):
             if show == True:
-                print initialwl[x][0:6], initialwl[x+1][0:6]
+                print(initialwl[x][0:6], initialwl[x+1][0:6])
             start = int(math.ceil(float(initialwl[x][0:6])))
             end  = int(math.ceil(float(initialwl[x+1][0:6])))
             if ha in range(start, end):
@@ -103,7 +125,8 @@ class spectrum():
         plt.show()
 
         
-dirpath = '/home/oort/PsiPer/AllFiles/'
+##dirpath = '/home/oort/PsiPer/AllFiles/'
+dirpath = '/home/seth/Desktop/AstroML/AllFiles/'
 files = []
 for f in os.listdir(dirpath):
     if '.fits' in f:
