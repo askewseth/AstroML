@@ -87,24 +87,6 @@ class spectrum():
         return [d,h,v,bint,dint,rint,bwl,dwl,rwl]
     
 
-##    def findHA(self, ha = 6562, show = False):
-##        haord = -1
-##        initialwl =[self.wlarr[x][1] for x in range(len(self.wlarr))]
-##        initialwl.append(self.last)
-##        tmp = [str(x) for x in initialwl]
-##        initialwl = tmp
-##        for x in range(len(initialwl)-1):
-##            if show == True:
-##                print(initialwl[x][0:6], initialwl[x+1][0:6])
-##            start = int(math.ceil(float(initialwl[x][0:6])))
-##            end  = int(math.ceil(float(initialwl[x+1][0:6])))
-##            if ha in range(start, end):
-##                haord = x
-####            if x == len(initialwl)-2 and ha != -1:
-####                ha = x
-##        return haord
-##
-##
     def findHA(self, ha = 6562, show = False):
         haord = -1
         initialwl =[self.wlarr[1][x] for x in range(len(self.wlarr[1]))]
@@ -118,8 +100,6 @@ class spectrum():
             end  = int(math.ceil(float(initialwl[x+1][0:6])))
             if ha in range(start, end):
                 haord = x
-##            if x == len(initialwl)-2 and ha != -1:
-##                ha = x
         return haord
     
     def plotOrd(self,i):
