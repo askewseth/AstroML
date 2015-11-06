@@ -10,6 +10,7 @@ class spectrum():
     Contains get methods for 
     """
     def __init__(self, path):
+        self.path = path
         self.f = pyfits.open(path)
         self.head = self.f[0].header
         self.wlarr = self.getWLArr()
@@ -125,18 +126,23 @@ class spectrum():
         plt.ylim(minn, maxx)
         plt.show()
 
-        
-##dirpath = '/home/oort/PsiPer/AllFiles/'
-dirpath = '/home/seth/Desktop/AstroML/AllFiles/'
-files = []
-for f in os.listdir(dirpath):
-    if '.fits' in f:
-        files.append(dirpath + f)
-specs = []
-for f in sorted(files):
-    specs.append(spectrum(f))
-
-s = specs[1]
+    def convertCSV(self, order):
+        csvdata = self.fullwl[order]
+        newname = self.path[:-5] + '_ord' + str(order) + '.csv'
+        with open(newname, 'w') as f:
+            f.write('TEST')
+            
+            
+            
+def test(dirpath = '/home/seth/Desktop/AstroML/AllFiles/'):    
+    files = []
+    for f in os.listdir(dirpath):
+        if '.fits' in f:
+            files.append(dirpath + f)
+    specs = []
+    for f in sorted(files):
+        specs.append(spectrum(f))
+    return specs
 
 
 
