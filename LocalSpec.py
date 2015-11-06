@@ -129,8 +129,14 @@ class spectrum():
     def convertCSV(self, order):
         csvdata = self.fullwl[order]
         newname = self.path[:-5] + '_ord' + str(order) + '.csv'
+        data = []
+        for x in range(len(self.fullwl[order])):
+            tmp = str(self.fullwl[order][x]) + ',' + str(self.data[order][x]) + '\n'
+            data.append(tmp)
+        towrite = ''.join(data)
+        print(towrite)
         with open(newname, 'w') as f:
-            f.write('TEST')
+            f.write(towrite)
             
             
             
