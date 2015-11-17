@@ -1,6 +1,7 @@
 import os
 import pyfits
 import math
+import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -55,20 +56,25 @@ class spectrum():
         order = []
         wli = []
         step = []
+        end = []
+##        return final
         for o in final:
             order.append(int(float(o[0])))
             wli.append(float(o[5]))
             step.append(float(o[6]))
+            end.append(float(o[7]))
         newLast = ( 1149 * step[-1] ) + wli[-1]
         self.last = newLast
-        wlarr = [order, wli, step]
+        nendnum = int(max(end))
+        nend = [nendnum for x in range(len(order))]
+        wlarr = [order, wli, step, nend]
         return wlarr
 
     def getFullWL(self):
         larray = []
         for y in range(len(self.wlarr[0])): #extra wl for end
             ls= []
-            for x in range(1149):
+            for x in range(self.wlarr[3][0]):
                 ls.append(self.wlarr[1][y] + ( x * self.wlarr[2][y] ) )
             larray.append(ls)
         #Correction for 6th order issues
@@ -102,6 +108,11 @@ class spectrum():
             if ha in range(start, end):
                 haord = x
         return haord
+
+    def plot(order = -1, ha = True):
+        if order == -1:
+            for x in range():
+                return
     
     def plotOrd(self,i):
         plt.plot(self.fullwl[i], self.data[i])  
@@ -126,19 +137,19 @@ class spectrum():
         plt.ylim(minn, maxx)
         plt.show()
 
-    def convertCSV(self, order):
+    def convertCSV(self, order = -1, ha = True ):
+        if ha:
+            self.convertCSV(order = self.findHA(), ha = False)
         csvdata = self.fullwl[order]
-        newname = self.path[:-5] + '_ord' + str(order) + '.csv'
+        sdata = self.data[order]
+        newname = self.path[:-5] + '_ord' + str(order)+ '_2' + '.csv'
         data = []
-        for x in range(len(self.fullwl[order])):
-            tmp = str(self.fullwl[order][x]) + ',' + str(self.data[order][x]) + '\n'
+        for x in range(len(csvdata)):
+            tmp = [ csvdata[x] , sdata[x] ]
             data.append(tmp)
-        towrite = ''.join(data)
-        print(towrite)
         with open(newname, 'w') as f:
-            f.write(towrite)
-            
-            
+            writer = csv.writer(f, delimiter=',')
+            writer.writerows(data)
             
 def test(dirpath = '/home/seth/Desktop/AstroML/AllFiles/'):    
     files = []
@@ -151,4 +162,34 @@ def test(dirpath = '/home/seth/Desktop/AstroML/AllFiles/'):
     return specs
 
 
+def main():
+    specs = test()
+    for s in specs:
+        try:
+            s.plotHA()
+        except Exception, e:
+            print(s.date)
 
+def do():
+    os.chdir('/home/seth/Desktop/AstroML/Drive/Astro/TCO/')
+    names = []
+    for f in os.listdir(os.getcwd()):
+        if '.fits' in f:
+            tmp = '/home/seth/Desktop/AstroML/Drive/Astro/TCO/' + f
+            names.append(tmp)
+    specs = []
+    for n in names:
+        try:
+            tmp = spectrum(n)
+            specs.append(tmp)
+            print 'no prob'
+        except Exception, e:
+            print 'ERROR: ', n
+    return specs
+            
+
+
+
+
+
+        

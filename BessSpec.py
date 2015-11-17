@@ -31,6 +31,12 @@ class spectrum():
             wls.append(tmp)
         return wls
 
+    def getWLRange(self):
+        ini = str(math.floor(self.wls[0]))
+        fin = str(math.ceil(self.wls[-1]))
+        ret = ini + " - " + fin
+        return ret
+
     def hasHA(self):
         wls = self.getWLARR()
         wli = int(math.floor(wls[1]))
@@ -51,7 +57,17 @@ class spectrum():
         with open(newname, 'w') as f:
             writer = csv.writer(f, delimiter = ',')
             writer.writerows(data)
-            
+
+    def plot(self):
+        plt.plot(self.wls ,self.data)
+        title = self.date
+        plt.title(title)
+        plt.xlabel('Wavelength (Angstroms)')
+        plt.ylabel('Intensity')
+        plt.show()
+
+
+        
 def test(dirpath = '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/'):    
     files = []
     for f in os.listdir(dirpath):
@@ -75,8 +91,10 @@ def main():
 
 
 specs = test()
-hsp = []
+has = []
+nots = []
 for s in specs:
     if s.hasHA():
-        hsp.append(s)
-        
+        has.append(s)
+    else:
+        nots.append(s)
