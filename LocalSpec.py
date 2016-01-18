@@ -109,12 +109,13 @@ class spectrum():
                 haord = x
         return haord
 
-    def plot(order = -1, ha = True):
+    def plot(self, order = -1, ha = False):
         if order == -1:
-            for x in range():
-                return
+##            print len(self.wlarr[1])
+            for x in range(len(self.wlarr[1])):
+                self.plotOrd(x)
     
-    def plotOrd(self,i):
+    def plotOrd(self, i):
         plt.plot(self.fullwl[i], self.data[i])  
         title = str(i) + "th order of the spectrum from " + self.date
         plt.title(title)
@@ -186,7 +187,9 @@ def do():
         except Exception, e:
             print 'ERROR: ', n
     return specs
-            
+
+
+##specs = test()
 
 
 

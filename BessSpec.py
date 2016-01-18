@@ -67,6 +67,24 @@ class spectrum():
         plt.show()
 
 
+def makeList(path):
+    try:
+        fileNames = [path + x for x in os.listdir(path)]
+    except:
+        return 'try again'
+    specs = []
+    specsnoha = []
+    nospecs = []
+    for f in fileNames:
+        try:
+            s = spectrum(f)
+            if s.hasHA():
+                specs.append(s)
+            else:
+                specsnoha.append(s)
+        except:
+            nospecs.append(f)
+    return specs, specsnoha, nospecs
         
 def test(dirpath = '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/'):    
     files = []
