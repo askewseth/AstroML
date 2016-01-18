@@ -15,6 +15,7 @@ class spectrum():
         self.head = self.f[0].header
         self.data = self.f[0].data
         self.date = self.head['DATE-OBS']
+        self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
         try:
             self.hjd = self.head['HJD-MID']
         except Exception, e:
@@ -85,8 +86,8 @@ def makeList(path):
         except:
             nospecs.append(f)
     return specs, specsnoha, nospecs
-        
-def test(dirpath = '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/'):    
+
+def test(dirpath = '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/'):
     files = []
     for f in os.listdir(dirpath):
         if '.fits' in f:
@@ -108,11 +109,11 @@ def main():
             print(s.date)
 
 
-specs = test()
-has = []
-nots = []
-for s in specs:
-    if s.hasHA():
-        has.append(s)
-    else:
-        nots.append(s)
+##specs = test()
+##has = []
+##nots = []
+##for s in specs:
+##    if s.hasHA():
+##        has.append(s)
+##    else:
+##        nots.append(s)
