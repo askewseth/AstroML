@@ -65,6 +65,21 @@ class spectrum():
             writer = csv.writer(f, delimiter = ',')
             writer.writerows(data)
 
+    def convertCSVNew(self):
+        newname = self.fname + '.csv'
+        data = []
+        wls = self.wls
+        d = self.data
+        for x in range(len(self.data)):
+            tmp = [ wls[x], d[x] ]
+            data.append(tmp)
+        filepath_arr = self.path.split('/')
+        dirpath = ('/').join(filepath_arr[:-1])
+        os.chdir(dirpath)
+        with open(newname, 'w') as f:
+            writer = csv.writer(f, delimiter = ',')
+            writer.writerows(data)
+
     def plot(self):
         plt.plot(self.wls ,self.data)
         title = self.date

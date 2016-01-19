@@ -45,7 +45,7 @@ for s in specs:
     if fname in fnames:
         same+=1
     fnames.append(fname)
-    print fname
+    print fname, ' : ',s.fname
 
 print ''
 print 'same' , same
