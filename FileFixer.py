@@ -6,16 +6,20 @@ import os
 #
 # ans =  raw_input('you sure?')
 
-path = '/home/oort/Downloads/BeSSSpectra/'
+dirpath = '/home/oort/Desktop/BeSS/'
 
+stars = os.listdir(dirpath)
 # if ans == 'n' or ans == 2:
 #     path = raw_input('Path to the directory containing the files to be changed: \n')
+
+path = '/home/oort/Desktop/BeSS/phiper/'
 
 os.chdir(path)
 file_paths = [path + x for x in os.listdir(path) if '.fits' in x]
 
 ans = raw_input('wanna check? y/n')
 if ans == 'y':
+
     for x in file_paths:
         print x
 
@@ -42,5 +46,14 @@ for s in specs:
         same+=1
     fnames.append(fname)
     print fname
+
+print ''
 print 'same' , same
-print 'total', len(fname)
+print 'total', len(fnames)
+print ''
+
+try:
+    specs[0].convertCSV()
+    print 'it worked!'
+except:
+    print 'nope, didnt work'

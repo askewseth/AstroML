@@ -20,8 +20,14 @@ class spectrum():
             self.hjd = self.head['HJD-MID']
         except Exception, e:
             self.hjd = self.head['MID-HJD']
+        self.fname = self.getFName()
         self.vhel = self.head['BSS_VHEL']
         self.wls = self.getWLARR()
+
+    def getFName(self):
+        name = ('').join(self.obj_name.split())
+        fname = name + '_' + str(self.hjd).split('.')[0] + '_' + str(self.hjd).split('.')[1]
+        return fname
 
     def getWLARR(self):
         wli = self.head['CRVAL1']
