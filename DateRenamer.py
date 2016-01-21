@@ -10,7 +10,7 @@ def getNewName(filename =
     datearr = date.split('-')
     datefinal = ''.join(datearr)
     finalfilename = datefinal + '.fits'
-##    print finalfilename 
+##    print finalfilename
     return finalfilename
 
 

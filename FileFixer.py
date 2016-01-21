@@ -52,8 +52,9 @@ print 'same' , same
 print 'total', len(fnames)
 print ''
 
-try:
-    specs[0].convertCSV()
-    print 'it worked!'
-except:
-    print 'nope, didnt work'
+for x in specs:
+    try:
+        x.convertCSV()
+        print 'it worked!'
+    except:
+        print 'nope, didnt work'
