@@ -15,6 +15,22 @@ def get_file_path(file_name, star_name=None, csv=True):
     else:
         url = 'http://tsethaskew.me/static/' + star_name + '/fits/' + file_name
 
+def get_dates(star_name, csv=True):
+    if csv:
+        url = 'http://tsethaskew.me/static/' + star_name + '/csv/'
+    else:
+        url = 'http://tsethaskew.me/static/' + star_name + '/fits/'
+    page = urllib2.urlopen(url)
+    soup = BeautifulSoup(page.read())
+    links = soup.contents[2].contents[3].contents[3].findAll('a')[5:]
+    files = [str(x.get('href')[:-4]) for x in links]
+    dates = []
+    for x in files:
+        arr = x.split('_')
+        num = float(arr[1] + '.' + arr[2])
+        dates.append(num)
+    return dates
+
 def get_stars():
     url = 'http://tsethaskew.me/static/'
     page = urllib2.urlopen(url)
