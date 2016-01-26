@@ -4,6 +4,7 @@ import math
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+from PyAstronomy import pyasl
 
 class spectrum():
 
@@ -13,13 +14,12 @@ class spectrum():
         self.path = None
         self.f = None
         self.head = None
-        self.date = None
         self.hjd = date
+        self.date = self.getDate()
         self.obj_name = None
         self.fname = None
         self.vhel = None
         self.wls = [x[0] for x in self.raw]
-
 
     def hasHA(self):
         wli = int(math.floor(self.wls[0]))
@@ -28,6 +28,11 @@ class spectrum():
             return True
         else:
             return False
+
+    def get_date(self):
+        date_arr = map(str, pyasl.daycnv(self.hjd))
+        date_str = date_arr[1] + '-' + date_arr[2] + '-' + date_arr[0]
+        return date_str
 
     def plot(self):
         plt.plot(self.wls ,self.data)
