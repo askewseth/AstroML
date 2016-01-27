@@ -2,6 +2,9 @@ import urllib2
 from BeautifulSoup import BeautifulSoup
 
 def get_file(star_name, hjd_date, csv=True):
+    '''
+    Gets file given name of star and HJD of observation
+    '''
     # whole_date, dec_date = str(hjd_date).split('.')
     # url = 'http://tsethaskew.me/static/' + star_name + '/csv/' + hjd
     if csv:
@@ -19,6 +22,9 @@ def get_file(star_name, hjd_date, csv=True):
         dates.append([num,x])
 
 def get_file_name(file_name, star_name, csv=True):
+    '''
+    Gets file given name of file and the name of the star
+    '''
     try:
         url = 'http://tsethaskew.me/static/' + star_name + '/csv/' + file_name
         page = urllib2.urlopen(url)
@@ -33,7 +39,10 @@ def get_file_name(file_name, star_name, csv=True):
 
 # print get_file_name('hd10516_2450709_60868.csv', 'phiper')
 
-def get_file_path(file_name, star_name=None, csv=True):
+def get_file_path(file_name, csv=True):
+    '''
+    Gets file given full file name, gets star info from full name
+    '''
     if csv:
         url = 'http://tsethaskew.me/static/' + file_name.split('_')[0] + '/csv/' + file_name
         page = urllib2.urlopen(url)
@@ -44,6 +53,9 @@ def get_file_path(file_name, star_name=None, csv=True):
         url = 'http://tsethaskew.me/static/' + star_name + '/fits/' + file_name
 
 def get_dates(star_name, csv=True):
+    '''
+    Returns list of all HJD dates given the name of the star
+    '''
     if csv:
         url = 'http://tsethaskew.me/static/' + star_name + '/csv/'
     else:
@@ -60,6 +72,9 @@ def get_dates(star_name, csv=True):
     return dates
 
 def get_files(star_name, csv=True):
+    '''
+    Returns a list of full file names in the DB for a given star
+    '''
     if csv:
         url = 'http://tsethaskew.me/static/' + star_name + '/csv/'
     else:
