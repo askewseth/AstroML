@@ -15,7 +15,7 @@ class spectrum():
         self.f = None
         self.head = None
         self.hjd = date
-        self.date = self.getDate()
+        self.date = self.get_date()
         self.obj_name = None
         self.fname = None
         self.vhel = None

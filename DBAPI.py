@@ -86,6 +86,9 @@ def get_files(star_name, csv=True):
     return files
 
 def get_stars():
+    '''
+    Return a list of all of the stars in the datbase
+    '''
     url = 'http://tsethaskew.me/static/'
     page = urllib2.urlopen(url)
     soup = BeautifulSoup(page.read())
@@ -93,12 +96,19 @@ def get_stars():
     stars = [str(x.get('href')[:-1]) for x in links]
     return stars
 
+def show_stars():
+    '''
+    Prints an enumerated list of all of the stars in the database
+    '''
+    stars = get_stars()
+    for x, star in enumerate(stars):
+        print x, ' : ', star
+
 def get_all_files(star_name, csv=True):
     # Make sure star valid
     stars = get_stars()
     if star_name not in stars:
-        for x,y in enumerate(stars):
-            print x, ' : ', y
+        show_stars()
         print 'The star name you entered is not in the database'
         reply = input('Enter the number of the star you want: ')
         star_name = stars[reply]
@@ -108,7 +118,13 @@ def get_all_files(star_name, csv=True):
     holder = []
     for f in files:
         holder.append(get_file_name(f, star_name))
-    return holder
+    # return holder
+    dates = get_dates(star_name)
+    final_arr = zip(dates, holder)
+    final_dic = {x : y for x, y in final_arr}
+    return final_arr, final_dic
+
+# get_all_files('psiper')
 
 def test():
     all_files = get_all_files('phiper')
