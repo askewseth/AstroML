@@ -6,11 +6,13 @@ import matplotlib.pyplot as plt
 
 
 class spectrum():
-    """
+    """Creates spectrum object for local .fits file.
+
     Spectrum object initialized with file path.
     Contains get methods for
     """
     def __init__(self, path):
+        """Initalized with path to .fits file."""
         self.path = path
         self.f = pyfits.open(path)
         self.head = self.f[0].header
@@ -24,6 +26,7 @@ class spectrum():
         self.stararr = self.getStarArr()
 
     def getWLArr(self):
+        """private."""
         wat2 = []
         for key in self.head.keys():
             if 'WAT2' in key:
@@ -71,6 +74,7 @@ class spectrum():
         return wlarr
 
     def getFullWL(self):
+        """private."""
         larray = []
         for y in range(len(self.wlarr[0])):    # extra wl for end
             ls = []
@@ -81,6 +85,7 @@ class spectrum():
         return larray
 
     def getStarArr(self):
+        """private."""
         d = self.date
         h = self.hjd
         v = self.vhel
@@ -93,6 +98,7 @@ class spectrum():
         return [d, h, v, bint, dint, rint, bwl, dwl, rwl]
 
     def findHA(self, ha=6562, show=False):
+        """private."""
         haord = -1
         initialwl = [self.wlarr[1][x] for x in range(len(self.wlarr[1]))]
         initialwl.append(self.last)
@@ -108,12 +114,14 @@ class spectrum():
         return haord
 
     def plot(self, order=-1, ha=False):
+        """private."""
         if order == -1:
             # print len(self.wlarr[1])
             for x in range(len(self.wlarr[1])):
                 self.plotOrd(x)
 
     def plotOrd(self, i):
+        """private for plot."""
         plt.plot(self.fullwl[i], self.data[i])
         title = str(i) + "th order of the spectrum from " + self.date
         plt.title(title)
@@ -122,6 +130,7 @@ class spectrum():
         plt.show()
 
     def plotHA(self):
+        """private for plot."""
         i = self.findHA()
         plt.plot(self.fullwl[i], self.data[i])
         halphalinex = [6562 for x in range(25000)]
@@ -137,6 +146,7 @@ class spectrum():
         plt.show()
 
     def convertCSV(self, order=-1, ha=True):
+        """Converts."""
         if ha:
             self.convertCSV(order=self.findHA(), ha=False)
         csvdata = self.fullwl[order]
@@ -150,7 +160,9 @@ class spectrum():
             writer = csv.writer(f, delimiter=',')
             writer.writerows(data)
 
+
 def test(dirpath='/home/seth/Desktop/AstroML/AllFiles/'):
+    """private."""
     files = []
     for f in os.listdir(dirpath):
         if '.fits' in f:
@@ -162,6 +174,7 @@ def test(dirpath='/home/seth/Desktop/AstroML/AllFiles/'):
 
 
 def main():
+    """private."""
     specs = test()
     for s in specs:
         try:
@@ -169,7 +182,9 @@ def main():
         except:
             print(s.date)
 
+
 def do():
+    """private."""
     os.chdir('/home/seth/Desktop/AstroML/Drive/Astro/TCO/')
     names = []
     for f in os.listdir(os.getcwd()):

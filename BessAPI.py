@@ -39,48 +39,58 @@ driver.get("http://basebe.obspm.fr/basebe/BeSS/Consul.php")
 # next_button = driver.find_element_by_name("next")
 # next_button.click()
 
+
 def query_page(driver=None):
-    if driver == None:
+    """Query the page."""
+    if driver is None:
         driver = webdriver.Firefox()
     # go to page
     driver.get("http://basebe.obspm.fr/basebe/BeSS/Consul.php")
     # get elements
-    star_name = driver.find_element_by_name("req_objet")
+    # star_name = driver.find_element_by_name("req_objet")
     resolution_min = driver.find_element_by_name("req_resolution§min")
     date_min = driver.find_element_by_name("req_date§min")
     wave_min = driver.find_element_by_name("req_wave§1")
     wave_max = driver.find_element_by_name("req_wave§2")
     submit_button = driver.find_element_by_name("submit")
     # keys to send
-    date_min.send_keys("1990-01-01") #YYYY-MM-DD
+    date_min.send_keys("1990-01-01")  # YYYY-MM-DD
     resolution_min.send_keys("10000")
     wave_min.send_keys("6562")
     wave_max.send_keys("6563")
     # star_name.send_keys("Psi Per")
-    #click submit to go to next page
+    # click submit to go to next page
     submit_button.click()
 
+
 def sort_date_dec(driver=None):
-    if driver == None:
+    """Sort page by date descending."""
+    if driver is None:
         driver = webdriver.Firefox()
     sort_button = driver.find_element_by_name("req_tri_hjdm")
     sort_button.click()
 
+
 def check_boxes(driver=None):
-    if driver == None:
+    """Check all boxes on page."""
+    if driver is None:
         driver = webdriver.Firefox()
     checkboxes = driver.find_elements_by_name("check[]")
     for x in checkboxes:
         x.click()
 
+
 def download(driver=None):
-    if driver == None:
+    """Click download button."""
+    if driver is None:
         driver = webdriver.Firefox()
     download_button = driver.find_element_by_name("multidownload")
     download_button.click()
 
+
 def next_page(driver=None):
-    if driver == None:
+    """Go to the next page."""
+    if driver is None:
         driver = webdriver.Firefox()
     next_button = driver.find_element_by_name("next")
     next_button.click()

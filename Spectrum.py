@@ -4,28 +4,30 @@ import pyfits
 import numpy
 import os
 
+
 def gettype(path):
+    """Determine which type of spectra dealing with."""
     f = pyfits.open(path)
     if type(f[0].data[0]) == numpy.float32:
         return 'BeSS'
     else:
         return 'Local'
 
+
 def spectrum(path):
-    '''
-    Universal spectrum 'class', figures out type of spectrum then
-    creates the necessary object for it
-    '''
+    """Create spectrum object given spectrum type."""
     if gettype(path) == 'BeSS':
         return be.spectrum(path)
     if gettype(path) == 'Local':
         return lo.spectrum(path)
 
+
 def getCSV(dirpath):
+    """private method."""
     if dirpath[-1] != '/':
         dirpath = dirpath + '/'
     os.chdir(dirpath)
-    fs= []
+    fs = []
     for f in os.listdir(os.getcwd()):
         if '.fits' in f:
             tmp = dirpath + f
@@ -43,15 +45,14 @@ def getCSV(dirpath):
         os.mkdir('CSVFiles')
     except:
         pass
-    csvpath = dirpath + 'CSVFiles/'
-    
-
-
+    # csvpath = dirpath + 'CSVFiles/'
 
 
 def test():
-    bepath = '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/PsiPer_19780911_ama.fits'
-    lopath = '/home/seth/Desktop/AstroML/AllFiles/19950206.fits'
+    """private method."""
+    # bepath = '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/\
+    #       PsiPer_19780911_ama.fits'
+    # lopath = '/home/seth/Desktop/AstroML/AllFiles/19950206.fits'
 
     locs = []
     lodir = '/home/seth/Desktop/AstroML/AllFiles/'
@@ -72,5 +73,3 @@ def test():
                 bes.append(spectrum(tmp))
             except:
                 print 'BESS: ', f
-
-

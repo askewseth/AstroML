@@ -1,8 +1,9 @@
 from Spectrum import spectrum
 import os
 
-#get directory of files to be fixed
-# path = raw_input('Path to the directory containing the files to be changed: \n')
+# get directory of files to be fixed
+# path = raw_input('Path to the directory containing \
+#         the files to be changed: \n')
 #
 # ans =  raw_input('you sure?')
 
@@ -10,7 +11,8 @@ dirpath = '/home/oort/Desktop/BeSS/'
 
 stars = os.listdir(dirpath)
 # if ans == 'n' or ans == 2:
-#     path = raw_input('Path to the directory containing the files to be changed: \n')
+#     path = raw_input('Path to the directory containing\
+#                    the files to be changed: \n')
 
 path = '/home/oort/Desktop/BeSS/phiper/'
 
@@ -41,14 +43,15 @@ same = 0
 fnames = []
 for s in specs:
     name = ('').join(s.obj_name.split())
-    fname = name + '_' + str(s.hjd).split('.')[0] + '_' + str(s.hjd).split('.')[1]
+    fname = name + '_' + str(s.hjd).split('.')[0]\
+        + '_' + str(s.hjd).split('.')[1]
     if fname in fnames:
-        same+=1
+        same += 1
     fnames.append(fname)
-    print fname, ' : ',s.fname
+    print fname, ' : ', s.fname
 
 print ''
-print 'same' , same
+print 'same', same
 print 'total', len(fnames)
 print ''
 

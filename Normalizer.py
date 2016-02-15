@@ -1,6 +1,6 @@
 import pylab as plt
 import numpy as np
-from scipy.interpolate import splrep,splev
+from scipy.interpolate import splrep, splev
 import sys
 import os
 

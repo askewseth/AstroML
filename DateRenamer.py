@@ -1,20 +1,23 @@
-import os, pyfits
-import halphafinder
+import os
+import pyfits
 
 
-def getNewName(filename =
-               '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/PsiPer_19780824_2_ama.fits'):
+def getNewName(
+        filename='/home/seth/Desktop/AstroML/Drive/Astro/BeSS/\
+        PsiPer_19780824_2_ama.fits'):
+    """private."""
     fi = pyfits.open(filename)
     head = fi[0].header
     date = head["DATE-OBS"][0:10]
     datearr = date.split('-')
     datefinal = ''.join(datearr)
     finalfilename = datefinal + '.fits'
-##    print finalfilename
+#    print finalfilename
     return finalfilename
 
 
 def fileArray(path):
+    """private."""
     os.chdir(path)
     arr = []
     for f in os.listdir(os.getcwd()):
@@ -24,4 +27,4 @@ def fileArray(path):
     return arr
 
 
-path= '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/'
+path = '/home/seth/Desktop/AstroML/Drive/Astro/BeSS/'
