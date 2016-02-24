@@ -3,7 +3,7 @@ import pyfits
 import math
 import csv
 import matplotlib.pyplot as plt
-# import numpy as np
+import gc
 
 
 class spectrum():
@@ -24,6 +24,8 @@ class spectrum():
         self.fname = self.getFName()
         self.vhel = self.head['BSS_VHEL']
         self.wls = self.getWLARR()
+        self.f.close()
+        gc.collect()
 
     def getFName(self):
         """private."""

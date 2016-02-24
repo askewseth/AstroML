@@ -3,7 +3,8 @@ import pyfits
 import math
 import csv
 import matplotlib.pyplot as plt
-
+import SimbadSearch as ss
+import gc
 
 class spectrum():
     """Creates spectrum object for local .fits file.
@@ -24,6 +25,19 @@ class spectrum():
         self.getWLArr()
         self.vhel = self.head['VHELIO']
         self.stararr = self.getStarArr()
+        self.obj_name = self.get_obj_name()
+        # self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
+        self.f.close()
+        gc.collect()
+
+    def get_obj_name(self):
+        obj_name = (' ').join(self.head['OBJNAME'].split())
+        ss_name = ss.get_name(obj_name)
+        if ss_name != None:
+            return ss_name
+        else:
+            return obj_name
+
 
     def getWLArr(self):
         """private."""
@@ -60,7 +74,6 @@ class spectrum():
         wli = []
         step = []
         end = []
-#        return final
         for o in final:
             order.append(int(float(o[0])))
             wli.append(float(o[5]))
@@ -159,6 +172,43 @@ class spectrum():
         with open(newname, 'w') as f:
             writer = csv.writer(f, delimiter=',')
             writer.writerows(data)
+
+    def convertCSVNew(self, order=-1, ha=True):
+            """Converts."""
+            if ha:
+                self.convertCSVNew(order=self.findHA(), ha=False)
+            csvdata = self.fullwl[order]
+            sdata = self.data[order]
+            name = ('').join(self.obj_name.split())
+            fname = name + '_' + str(self.hjd).split('.')[0] +\
+                '_' + str(self.hjd).split('.')[1]
+            data = []
+            print len(sdata), len(csvdata)
+            for x in range(len(csvdata)):
+                tmp = [csvdata[x], sdata[x]]
+                data.append(tmp)
+            with open(fname, 'w') as f:
+                writer = csv.writer(f, delimiter=',')
+                writer.writerows(data)
+
+        # name = ('').join(self.obj_name.split())
+        # fname = name + '_' + str(self.hjd).split('.')[0] +\
+        #     '_' + str(self.hjd).split('.')[1]
+
+        # """convert csv with new naming convention."""
+        # newname = self.fname + '.csv'
+        # data = []
+        # wls = self.wls
+        # d = self.data
+        # for x in range(len(self.data)):
+        #     tmp = [wls[x], d[x]]
+        #     data.append(tmp)
+        # filepath_arr = self.path.split('/')
+        # dirpath = ('/').join(filepath_arr[:-1])
+        # os.chdir(dirpath)
+        # with open(newname, 'w') as f:
+        #     writer = csv.writer(f, delimiter=',')
+        #     writer.writerows(data)
 
 
 def test(dirpath='/home/seth/Desktop/AstroML/AllFiles/'):

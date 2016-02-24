@@ -1,62 +1,42 @@
 import os
+import pyfits
 os.chdir('/home/seth/Desktop/AstroML/Programs/AstroML/')
-from Spectrum import spectrum
-path = '/home/seth/Desktop/AstroFiles/'
-os.chdir(path)
+import SimbadSearch as ss
 
-directories = [x for x in os.listdir(os.getcwd()) if '.py' not in x]
 
-def get_specs(star_dir):
-    os.chdir(path + star_dir)
-    specs = []
-    nots = []
-    file_names = [path + star_dir + '/' + x for x in os.listdir(os.getcwd())]
-    for f in file_names:
+def get_files_dic(path='/home/seth/Desktop/Entire_BeSS/'):
+    files = [path + x for x in os.listdir(path) if '.fits' in x]
+    dic = {}
+    for f in files:
         try:
-            s = spectrum(f)
-            specs.append(s)
-            # print "s:", type(s)
+            fits = pyfits.open(f)
+            name = fits[0].header['OBJNAME']
+            sim_name = ss.get_name(name)
+            fits.close()
+            dic[f] = [f, sim_name]
         except:
-            nots.append(f)
+            pass
+    return dic
 
-    # for x,s in enumerate(specs):
-        # print x, type(s)
-    return specs, nots
+def get_unique(dic):
+    values = dic.values()
+    names = [x[1] for x in values]
+    unique_names = []
+    for x in names:
+        if x not in unique_names:
+            unique_names.append(x)
+    return unique_names
 
-def get_stats(star_dir):
-    os.chdir(path + star_dir)
-    specs = []
-    nots = []
-    file_names = [path + star_dir + '/' + x for x in os.listdir(os.getcwd())]
-    for f in file_names:
-        try:
-            specs.append(spectrum(f))
-        except:
-            nots.append(f)
-    return len(specs), len(nots)
 
-def get_all_stats():
-    stats = []
-    for x in directories:
-        stat = get_stats(x)
-        print x , ': ' , stat[0] ,',' , stat[1]
+def make_dirs(unique_names):
+    os.chdir('/home/seth/Desktop/Entire_BeSS/dirs/')
+    stripped = map(lambda x: ('').join(x.strip(' ')), unique_names)
+    for x in stripped:
+        os.mkdir(x)
+    print 'DONE'
 
-def do():
-    specs, nots = get_specs('PsiPer')
-    for x in nots:
-        print x
 
-def get_all_specs():
-    all_specs = []
-    for x in directories:
-        specs, nots = get_specs(x)
-        print type(specs)
-        all_specs.append(specs)
-    print 'len all specs: ', len(all_specs)
-    for specarr in all_specs:
-        for s in specarr:
-            try:
-                s.convertCSV()
-            except Exception as e:
-                print 'ERROR: ',e
-get_all_specs()
+if __name__ == '__main__':
+    dic = get_files_dic()
+    unique_names = get_unique(dic)
+    make_dirs(unique_names)
