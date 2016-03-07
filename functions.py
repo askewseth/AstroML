@@ -1,11 +1,13 @@
 import os
 from Spectrum import spectrum
 import SimbadSearch as ss
+import math
 
 
-def getSpecs(path = '/home/oort/Downloads/AstroFilesRaw/AstroFiles/'):
+def getSpecs(path = '/home/oort/Downloads/AstroFilesRaw/AstroFiles/', nots=False):
     specs = []
     errors = []
+    nots_arr = []
     filenames = [path + x for x in os.listdir(path) if '.fits' in x]
     print 'length filenames: ', len(filenames)
     for x in filenames:
@@ -13,5 +15,31 @@ def getSpecs(path = '/home/oort/Downloads/AstroFilesRaw/AstroFiles/'):
             specs.append(spectrum(x))
         except Exception as e:
             errors.append(e)
+            nots_arr.append(x)
     print 'length specs: ', len(specs), '\tlength errors: ', len(errors)
+    if nots is True:
+        return nots_arr
     return specs, errors
+
+
+def getCors(path='/home/oort/Downloads/AstroFilesRaw/AstroFiles/'):
+    specs = []
+    errors = []
+    nots_arr = []
+    dic = {}
+    filenames = [path + x for x in os.listdir(path) if '.fits' in x]
+    length = len(filenames)
+    print 'length filenames: ', length
+    for i, x in enumerate(filenames):
+        try:
+            print i, '\r',
+            s = spectrum(x)
+            specs.append(s)
+            name = x.split('/')[-1]
+            s.convertCSVNew()
+            dic[name] = s.csv_name
+        except Exception as e:
+            errors.append(e)
+            nots_arr.append(x)
+    print 'length specs: ', len(specs), '\tlength errors: ', len(errors)
+    return dic, errors

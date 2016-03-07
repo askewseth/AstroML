@@ -5,6 +5,7 @@ import csv
 import matplotlib.pyplot as plt
 import SimbadSearch as ss
 import gc
+import nameoperations as no
 
 class spectrum():
     """Creates spectrum object for local .fits file.
@@ -15,6 +16,7 @@ class spectrum():
     def __init__(self, path):
         """Initalized with path to .fits file."""
         self.path = path
+        self.filepath = [x for x in path.split('/')[:-1]]
         self.f = pyfits.open(path)
         self.head = self.f[0].header
         self.wlarr = self.getWLArr()
@@ -26,21 +28,34 @@ class spectrum():
         self.vhel = self.head['VHELIO']
         self.stararr = self.getStarArr()
         self.obj_name = self.get_obj_name()
+        self.csv_name = ('').join(self.obj_name.split())
         # self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
         self.f.close()
+        # self.delete()
         gc.collect()
+
+    def delete(self):
+        del self.head
+        del self.wlarr
+        del self.data
+        del self.date
+        del self.hjd
+        del self.fullwl
+        del self.vhel
+        del self.stararr
+        del self.obj_name
+
 
     def get_obj_name(self):
         obj_name = (' ').join(self.head['OBJNAME'].split())
-        ss_name = ss.get_name(obj_name)
+        ss_name = ss.get_name(no.split_str(obj_name))
         if ss_name != None:
             return ss_name
         else:
             return obj_name
 
-
-    def getWLArr(self):
-        """private."""
+    def getWLArr_final(self):
+        """Break apart header into pieces with info about wavelength."""
         wat2 = []
         for key in self.head.keys():
             if 'WAT2' in key:
@@ -61,24 +76,84 @@ class spectrum():
         for x in range(len(final)):
             if len(final[x][4]) > 1:
                 final[x].insert(4, 0)
-        # Corrections to be done to final
+        return final
+
+    def correctFinal(self):
+        """Make necessary corrections ot getWLArr_final."""
+        final = self.getWLArr_final()
         # Correction for 6th order 2nd decimal
-        if final[5][5].count('.') > 1:
-            pos = final[5][5].rfind('.')
-            tokeep = final[5][5][:pos]
-            toapp = final[5][5][pos:]
-            final[5][5] = tokeep
-            final[5].insert(6, toapp)
-        self.wltest = final
+        for x in final:
+            # if final[5][5].count('.') > 1:
+            # if x[5].count('.') > 1:
+            #     pos = final[5][5].rfind('.')
+            #     tokeep = final[5][5][:pos]
+            #     toapp = final[5][5][pos:]
+            #     final[5][5] = tokeep
+            #     final[5].insert(6, toapp)
+            #     print 'corrected'
+            if x[5].count('.') > 1:
+                pos = x[5].rfind('.')
+                tokeep = x[5][:pos]
+                toapp = x[5][pos:]
+                x[5] = tokeep
+                x.insert(6, toapp)
+                # print 'corrected'
+            # if first element contains '='
+            if '=' in x[0]:
+                x[0] = x[0].split('=')[0]
+
+
+        return final
+
+    def getWLArr(self):
+        """Set the wavelengths for the file given final from correctFinal."""
+        # """private."""
+        # wat2 = []
+        # for key in self.head.keys():
+        #     if 'WAT2' in key:
+        #         wat2.append(key)
+        # spec = []
+        # for w in wat2:
+        #     spec.append(self.head[w])
+        # specstring = ''.join(spec)
+        # specend = specstring.split('spec')
+        # specend2 = []
+        # for x in range(len(specend)):
+        #     if specend[x][0] in ['0', '1', '2', '3', '4', '5', '6', '7',
+        #                          '8', '9']:
+        #         specend2.append(specend[x])
+        # final = []                    # Contains w.l. info as 2D array
+        # for x in range(len(specend2)):
+        #     final.append(specend2[x].split(' '))
+        # for x in range(len(final)):
+        #     if len(final[x][4]) > 1:
+        #         final[x].insert(4, 0)
+        # # Corrections to be done to final
+        # # Correction for 6th order 2nd decimal
+        # for x in final:
+        #     # if final[5][5].count('.') > 1:
+        #     if x[5].count('.') > 1:
+        #         pos = final[5][5].rfind('.')
+        #         tokeep = final[5][5][:pos]
+        #         toapp = final[5][5][pos:]
+        #         final[5][5] = tokeep
+        #         final[5].insert(6, toapp)
+        # self.wltest = final
+
+        final = self.correctFinal()
         order = []
         wli = []
         step = []
         end = []
         for o in final:
-            order.append(int(float(o[0])))
-            wli.append(float(o[5]))
-            step.append(float(o[6]))
-            end.append(float(o[7]))
+            try:
+                order.append(int(float(o[0])))
+                wli.append(float(o[5]))
+                step.append(float(o[6]))
+                end.append(float(o[7]))
+            except Exception as e:
+                print 'ERROR: ', e
+                print o
         newLast = (1149 * step[-1]) + wli[-1]
         self.last = newLast
         nendnum = int(max(end))
@@ -179,15 +254,16 @@ class spectrum():
                 self.convertCSVNew(order=self.findHA(), ha=False)
             csvdata = self.fullwl[order]
             sdata = self.data[order]
-            name = ('').join(self.obj_name.split())
+            name = self.csv_name
             fname = name + '_' + str(self.hjd).split('.')[0] +\
                 '_' + str(self.hjd).split('.')[1]
+            self.csv_name = fname
             data = []
-            print len(sdata), len(csvdata)
+            # print len(sdata), len(csvdata)
             for x in range(len(csvdata)):
                 tmp = [csvdata[x], sdata[x]]
                 data.append(tmp)
-            with open(fname, 'w') as f:
+            with open(self.filepath + fname, 'w') as f:
                 writer = csv.writer(f, delimiter=',')
                 writer.writerows(data)
 
@@ -252,3 +328,28 @@ def do():
     return specs
 
 # specs = test()
+
+
+
+def toTest():
+    path = '/home/oort/Downloads/AstroFilesRaw/AstroFiles/'
+    filenames = [path + x for x in os.listdir(path) if '.fits' in x]
+    print "the length of filenames: ", len(filenames)
+    specs = []
+    nots = []
+    errors = []
+    # print filenames[:10]
+    for f in filenames:
+        try:
+            specs.append(spectrum(f))
+        except Exception as e:
+            nots.append(f)
+            errors.append(e)
+    print "Specs length: ", len(specs)
+    print "Nots length: ", len(nots)
+    print "Errors: \n"
+    print errors
+
+
+if __name__ == "__main__":
+    toTest()
