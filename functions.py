@@ -14,7 +14,9 @@ def getSpecs(path = '/home/oort/Downloads/AstroFilesRaw/AstroFiles/', nots=False
     for i, x in enumerate(filenames):
         print i, '\r',
         try:
-            specs.append(spectrum(x))
+            s = spectrum(x)
+            specs.append(s)
+            s.close()
         except Exception as e:
             errors.append(e)
             nots_arr.append(x)
@@ -40,6 +42,7 @@ def getCors(path='/home/oort/Downloads/AstroFilesRaw/AstroFiles/'):
             name = x.split('/')[-1]
             s.convertCSVNew()
             dic[name] = s.csv_name
+            s.close()
         except Exception as e:
             errors.append(e)
             nots_arr.append(x)
@@ -54,7 +57,7 @@ def getThread(path='/home/oort/Downloads/AstroFilesRaw/AstroFiles/'):
             s = spectrum(x)
             s.convertCSVNew()
             names.append(s.csv_name)
-            s.delete()
+            s.close()
         except Exception as e:
             print e
     threads = []

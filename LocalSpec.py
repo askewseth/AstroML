@@ -16,7 +16,7 @@ class spectrum():
     def __init__(self, path):
         """Initalized with path to .fits file."""
         self.path = path
-        self.filepath = [x for x in path.split('/')[:-1]]
+        self.filepath = ("/").join([x for x in path.split('/')[:-1]])
         self.f = pyfits.open(path)
         self.head = self.f[0].header
         self.wlarr = self.getWLArr()
@@ -30,11 +30,12 @@ class spectrum():
         self.obj_name = self.get_obj_name()
         self.csv_name = ('').join(self.obj_name.split())
         # self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
-        self.f.close()
+        # self.f.close()
         # self.delete()
-        gc.collect()
+        # gc.collect()
 
-    def delete(self):
+    def close(self):
+        """Delete all refrences and close file."""
         del self.head
         del self.wlarr
         del self.data
@@ -44,6 +45,8 @@ class spectrum():
         del self.vhel
         del self.stararr
         del self.obj_name
+        self.f.close()
+        gc.collect()
 
 
     def get_obj_name(self):
