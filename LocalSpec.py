@@ -84,16 +84,7 @@ class spectrum():
     def correctFinal(self):
         """Make necessary corrections ot getWLArr_final."""
         final = self.getWLArr_final()
-        # Correction for 6th order 2nd decimal
         for x in final:
-            # if final[5][5].count('.') > 1:
-            # if x[5].count('.') > 1:
-            #     pos = final[5][5].rfind('.')
-            #     tokeep = final[5][5][:pos]
-            #     toapp = final[5][5][pos:]
-            #     final[5][5] = tokeep
-            #     final[5].insert(6, toapp)
-            #     print 'corrected'
             if x[5].count('.') > 1:
                 pos = x[5].rfind('.')
                 tokeep = x[5][:pos]
@@ -110,39 +101,6 @@ class spectrum():
 
     def getWLArr(self):
         """Set the wavelengths for the file given final from correctFinal."""
-        # """private."""
-        # wat2 = []
-        # for key in self.head.keys():
-        #     if 'WAT2' in key:
-        #         wat2.append(key)
-        # spec = []
-        # for w in wat2:
-        #     spec.append(self.head[w])
-        # specstring = ''.join(spec)
-        # specend = specstring.split('spec')
-        # specend2 = []
-        # for x in range(len(specend)):
-        #     if specend[x][0] in ['0', '1', '2', '3', '4', '5', '6', '7',
-        #                          '8', '9']:
-        #         specend2.append(specend[x])
-        # final = []                    # Contains w.l. info as 2D array
-        # for x in range(len(specend2)):
-        #     final.append(specend2[x].split(' '))
-        # for x in range(len(final)):
-        #     if len(final[x][4]) > 1:
-        #         final[x].insert(4, 0)
-        # # Corrections to be done to final
-        # # Correction for 6th order 2nd decimal
-        # for x in final:
-        #     # if final[5][5].count('.') > 1:
-        #     if x[5].count('.') > 1:
-        #         pos = final[5][5].rfind('.')
-        #         tokeep = final[5][5][:pos]
-        #         toapp = final[5][5][pos:]
-        #         final[5][5] = tokeep
-        #         final[5].insert(6, toapp)
-        # self.wltest = final
-
         final = self.correctFinal()
         order = []
         wli = []
