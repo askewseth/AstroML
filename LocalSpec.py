@@ -16,7 +16,7 @@ class spectrum():
     def __init__(self, path):
         """Initalized with path to .fits file."""
         self.path = path
-        self.filepath = ("/").join([x for x in path.split('/')[:-1]])
+        self.filepath = ("/").join([x for x in path.split('/')[:-1]]) + '/'
         self.f = pyfits.open(path)
         self.head = self.f[0].header
         self.wlarr = self.getWLArr()
@@ -118,7 +118,9 @@ class spectrum():
         newLast = (1149 * step[-1]) + wli[-1]
         self.last = newLast
         nendnum = int(max(end))
-        nend = [nendnum for x in range(len(order))]
+        # nend = [nendnum for x in range(len(order))]
+        # Should always be 1374
+        nend = [1374 for x in range(len(order))]
         wlarr = [order, wli, step, nend]
         return wlarr
 
@@ -132,6 +134,17 @@ class spectrum():
             larray.append(ls)
         # Correction for 6th order issues
         return larray
+
+# def getTest(self):
+#     """private."""
+#     larray = []
+#     for y in range(len(self.wlarr[0])):    # extra wl for end
+#         ls = []
+#         for x in range(self.wlarr[3][0]):
+#             ls.append(self.wlarr[1][y] + (x * self.wlarr[2][y]))
+#         larray.append(ls)
+#     # Correction for 6th order issues
+#     return return
 
     def getStarArr(self):
         """private."""
@@ -162,12 +175,17 @@ class spectrum():
                 haord = x
         return haord
 
-    def plot(self, order=-1, ha=False):
+    def plot(self, order=-1, ha=True):
         """private."""
+        if ha:
+            self.plotHA()
+            return
         if order == -1:
             # print len(self.wlarr[1])
             for x in range(len(self.wlarr[1])):
                 self.plotOrd(x)
+            return
+
 
     def plotOrd(self, i):
         """private for plot."""
@@ -181,11 +199,17 @@ class spectrum():
     def plotHA(self):
         """private for plot."""
         i = self.findHA()
+        try:
+            assert len(self.fullwl[i]) == len(self.data[i])
+        except AssertionError:
+            print '\ndate: ', self.hjd
+            print 'wl: ', len(self.fullwl[i]), 'data', len(self.data[i])
         plt.plot(self.fullwl[i], self.data[i])
-        halphalinex = [6562 for x in range(25000)]
-        halphaliney = [x for x in range(25000)]
+        halphalinex = [6562 for x in range(max(self.data[i]))]
+        halphaliney = [x for x in range(max(self.data[i]))]
         plt.plot(halphalinex, halphaliney)
         title = str(i) + "th order of the spectrum from " + self.date
+        title = ''.join([self.obj_name, '\n', title])
         plt.title(title)
         plt.xlabel('Wavelength (Angstroms)')
         plt.ylabel('Intensity')
@@ -193,6 +217,34 @@ class spectrum():
         minn = min(self.data[i]) - 100
         plt.ylim(minn, maxx)
         plt.show()
+
+def saveplot(self, ret=False):
+    """private for plot."""
+    i = self.findHA()
+    try:
+        assert len(self.fullwl[i]) == len(self.data[i])
+    except AssertionError:
+        print '\ndate: ', self.hjd
+        print 'wl: ', len(self.fullwl[i]), 'data', len(self.data[i])
+    plt.plot(self.fullwl[i], self.data[i])
+    halphalinex = [6562 for x in range(max(self.data[i]))]
+    halphaliney = [x for x in range(max(self.data[i]))]
+    plt.plot(halphalinex, halphaliney)
+    title = str(i) + "th order of the spectrum from " + self.date
+    title = ''.join([self.obj_name, '\n', title])
+    plt.title(title)
+    plt.xlabel('Wavelength (Angstroms)')
+    plt.ylabel('Intensity')
+    maxx = max(self.data[i]) + 100
+    minn = min(self.data[i]) - 100
+    plt.ylim(minn, maxx)
+    name = self.obj_name + '_' + str(self.hjd).split('.')[0] +\
+        '_' + str(self.hjd).split('.')[1] + '.png'
+    plt.saveas(name)
+    if ret:
+        return name
+    return
+
 
     def convertCSV(self, order=-1, ha=True):
         """Converts."""
@@ -209,18 +261,20 @@ class spectrum():
             writer = csv.writer(f, delimiter=',')
             writer.writerows(data)
 
-    def convertCSVNew(self, order=-1, ha=True):
+    def convertCSVNew(self, order=None, ha=True):
             """Converts."""
             if ha:
                 self.convertCSVNew(order=self.findHA(), ha=False)
+                return
             csvdata = self.fullwl[order]
             sdata = self.data[order]
             name = self.csv_name
             fname = name + '_' + str(self.hjd).split('.')[0] +\
-                '_' + str(self.hjd).split('.')[1]
+                '_' + str(self.hjd).split('.')[1] + '.csv'
+            # print fname
             self.csv_name = fname
             data = []
-            # print len(sdata), len(csvdata)
+            # print len(sdata) == len(csvdata), '\t', len(sdata), '\t', len(csvdata)
             for x in range(len(csvdata)):
                 tmp = [csvdata[x], sdata[x]]
                 data.append(tmp)

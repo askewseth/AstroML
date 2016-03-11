@@ -24,6 +24,19 @@ class spectrum():
         self.fname = self.getFName()
         self.vhel = self.head['BSS_VHEL']
         self.wls = self.getWLARR()
+        self.csv_name = self.fname
+
+
+    def close(self):
+        del self.head
+        del self.data
+        del self.date
+        del self.obj_name
+        del self.hjd
+        del self.vhel
+        del self.fname
+        del self.csv_name
+        del self.wls
         self.f.close()
         gc.collect()
 

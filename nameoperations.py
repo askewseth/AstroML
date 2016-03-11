@@ -16,7 +16,10 @@
 
 # import pyfits
 import os
-os.chdir('/home/oort/AstroML')
+try:
+    os.chdir('/home/oort/AstroML')
+except:
+    os.chdir('/home/extra/AstroML/')
 # os.chdir('/home/seth/Desktop/AstroML/Programs/AstroML/')
 # import SimbadSearch as ss
 

@@ -1,7 +1,6 @@
 """Module for validating searches and finding alternate names."""
 import os
 from astroquery.simbad import Simbad
-# from Spectrum import spectrum
 
 def get_name(entry):
     """Get proper name for star given it's name."""
@@ -9,7 +8,7 @@ def get_name(entry):
     #     entry = entry[:3] + ' ' + entry[3:]
 
     # try:
-    result = Simbad.query_object(entry)
+    result = Simbad.query_object(entry, verbose=False)
     if result is not None:
         obj_name = filter(lambda x: x != '*', result[0][0].split())
         prop_name = (' ').join(map(lambda x: x.capitalize(), obj_name))
@@ -23,20 +22,3 @@ def get_name(entry):
     # except:
     #     print "ERROR"
     #     return None
-
-
-# def get_specs(path):
-#     """Test Method."""
-#     specs = []
-#     nots = []
-#     errors = []
-#     if path[-1] != '/':
-#         path += '/'
-#     files = [path + x for x in os.listdir(path)]
-#     for f in files:
-#         try:
-#             specs.append(spectrum(f))
-#         except Exception as e:
-#             nots.append(f)
-#             errors.append(e)
-#     return specs, nots, errors
