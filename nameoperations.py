@@ -1,19 +1,3 @@
-# dic = []
-# for x in filenames:
-#     try:
-#         fits = pyfits.open(x)
-#         name = fits[0].header['OBJNAME']
-#         name = split_str(name)
-#         ssname = ss.get_name(name)
-#         dic.append([x, ssname])
-#     except:
-#         dic.append([x, 'FAILED'])
-#     try:
-#         fits.close()
-#     except:
-#         pass
-
-
 # import pyfits
 import os
 try:
