@@ -25,9 +25,10 @@ class spectrum():
         self.vhel = self.head['BSS_VHEL']
         self.wls = self.getWLARR()
         self.csv_name = self.fname
-
+        self.HA = self.hasHA()
 
     def close(self):
+        """Delete all refrences to file objects and close file."""
         del self.head
         del self.data
         del self.date
@@ -37,6 +38,7 @@ class spectrum():
         del self.fname
         del self.csv_name
         del self.wls
+        del self.HA
         self.f.close()
         gc.collect()
 
@@ -75,19 +77,6 @@ class spectrum():
             return False
 
     def convertCSV(self):
-        """convert .fits file to .csv file."""
-        newname = self.path[:-5] + '.csv'
-        data = []
-        wls = self.wls
-        d = self.data
-        for x in range(len(self.data)):
-            tmp = [wls[x], d[x]]
-            data.append(tmp)
-        with open(newname, 'w') as f:
-            writer = csv.writer(f, delimiter=',')
-            writer.writerows(data)
-
-    def convertCSVNew(self):
         """convert csv with new naming convention."""
         newname = self.fname + '.csv'
         data = []
@@ -106,64 +95,8 @@ class spectrum():
     def plot(self):
         """plot the spectra."""
         plt.plot(self.wls, self.data)
-        title = self.date
+        title = self.obj_name + '\n' + self.fname
         plt.title(title)
         plt.xlabel('Wavelength (Angstroms)')
         plt.ylabel('Intensity')
         plt.show()
-
-
-def makeList(path):
-    """test method."""
-    try:
-        fileNames = [path + x for x in os.listdir(path)]
-    except:
-        return 'try again'
-    specs = []
-    specsnoha = []
-    nospecs = []
-    for f in fileNames:
-        try:
-            s = spectrum(f)
-            if s.hasHA():
-                specs.append(s)
-            else:
-                specsnoha.append(s)
-        except:
-            nospecs.append(f)
-    return specs, specsnoha, nospecs
-
-
-def test(dirpath='/home/seth/Desktop/AstroML/Drive/Astro/BeSS/'):
-    """test method."""
-    files = []
-    for f in os.listdir(dirpath):
-        if '.fits' in f:
-            files.append(dirpath + f)
-    specs = []
-    for f in sorted(files):
-        try:
-            specs.append(spectrum(f))
-        except:
-            print 'ERROR FILE', f
-    return specs
-
-
-def main():
-    """test method."""
-    specs = test()
-    for s in specs:
-        try:
-            s.plotHA()
-        except:
-            print(s.date)
-
-
-# specs = test()
-# has = []
-# nots = []
-# for s in specs:
-#    if s.hasHA():
-#        has.append(s)
-#    else:
-#        nots.append(s)
