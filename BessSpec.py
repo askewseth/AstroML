@@ -26,6 +26,8 @@ class spectrum():
         self.wls = self.getWLARR()
         self.csv_name = self.fname
         self.HA = self.hasHA()
+        self.fulldata = [self.wls, self.data]
+        self.hadata = self.fulldata
 
     def close(self):
         """Delete all refrences to file objects and close file."""

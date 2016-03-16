@@ -29,6 +29,7 @@ class spectrum():
         self.stararr = self.getStarArr()
         self.obj_name = self.get_obj_name()
         self.csv_name = ('').join(self.obj_name.split())
+        self.fulldata = [self.wls, self.data]
         # self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
         # self.f.close()
         # self.delete()
@@ -45,6 +46,7 @@ class spectrum():
         del self.vhel
         del self.stararr
         del self.obj_name
+        del self.fulldata
         self.f.close()
         gc.collect()
 
