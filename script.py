@@ -18,15 +18,6 @@ def get_files_dic(path='/home/seth/Desktop/Entire_BeSS/'):
             pass
     return dic
 
-def get_unique(dic):
-    values = dic.values()
-    names = [x[1] for x in values]
-    unique_names = []
-    for x in names:
-        if x not in unique_names:
-            unique_names.append(x)
-    return unique_names
-
 
 def make_dirs(unique_names):
     os.chdir('/home/seth/Desktop/Entire_BeSS/dirs/')
