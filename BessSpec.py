@@ -97,6 +97,7 @@ class spectrum():
     def plot(self):
         """plot the spectra."""
         plt.plot(self.wls, self.data)
+        plt.grid(True)
         title = self.obj_name + '\n' + self.fname
         plt.title(title)
         plt.xlabel('Wavelength (Angstroms)')

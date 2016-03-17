@@ -192,6 +192,7 @@ class spectrum():
     def plotOrd(self, i):
         """private for plot."""
         plt.plot(self.fullwl[i], self.data[i])
+        plt.grid(True)
         title = str(i) + "th order of the spectrum from " + self.date
         plt.title(title)
         plt.xlabel('Wavelength (Angstroms)')
@@ -210,6 +211,7 @@ class spectrum():
         halphalinex = [6562 for x in range(max(self.data[i]))]
         halphaliney = [x for x in range(max(self.data[i]))]
         plt.plot(halphalinex, halphaliney)
+        plt.grid(True)
         title = str(i) + "th order of the spectrum from " + self.date
         title = ''.join([self.obj_name, '\n', title])
         plt.title(title)
