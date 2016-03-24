@@ -29,7 +29,8 @@ class spectrum():
         self.stararr = self.getStarArr()
         self.obj_name = self.get_obj_name()
         self.csv_name = ('').join(self.obj_name.split())
-        self.fulldata = [self.wls, self.data]
+        self.haord = self.findHA()
+        self.fulldata = [self.fullwl[self.haord], self.data[self.haord]]
         # self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
         # self.f.close()
         # self.delete()
