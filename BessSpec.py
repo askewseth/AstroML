@@ -1,3 +1,4 @@
+"""Spectrum object for filesdownloaded from the BESS database."""
 import os
 import pyfits
 import math
@@ -98,59 +99,3 @@ class spectrum():
         plt.xlabel('Wavelength (Angstroms)')
         plt.ylabel('Intensity')
         plt.show()
-
-
-def makeList(path):
-    """test method."""
-    try:
-        fileNames = [path + x for x in os.listdir(path)]
-    except:
-        return 'try again'
-    specs = []
-    specsnoha = []
-    nospecs = []
-    for f in fileNames:
-        try:
-            s = spectrum(f)
-            if s.hasHA():
-                specs.append(s)
-            else:
-                specsnoha.append(s)
-        except:
-            nospecs.append(f)
-    return specs, specsnoha, nospecs
-
-
-def test(dirpath='/home/seth/Desktop/AstroML/Drive/Astro/BeSS/'):
-    """test method."""
-    files = []
-    for f in os.listdir(dirpath):
-        if '.fits' in f:
-            files.append(dirpath + f)
-    specs = []
-    for f in sorted(files):
-        try:
-            specs.append(spectrum(f))
-        except:
-            print 'ERROR FILE', f
-    return specs
-
-
-def main():
-    """test method."""
-    specs = test()
-    for s in specs:
-        try:
-            s.plotHA()
-        except:
-            print(s.date)
-
-
-# specs = test()
-# has = []
-# nots = []
-# for s in specs:
-#    if s.hasHA():
-#        has.append(s)
-#    else:
-#        nots.append(s)
