@@ -27,9 +27,11 @@ class spectrum():
         self.vhel = self.head['VHELIO']
         self.stararr = self.getStarArr()
         self.obj_name = self.get_obj_name()
-        # self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
         self.f.close()
         gc.collect()
+
+    def __repr__(self):
+        return "BeSS Spectrum: {0} , {1}".format(self.obj_name, self.date)
 
     def get_obj_name(self):
         obj_name = (' ').join(self.head['OBJNAME'].split())

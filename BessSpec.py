@@ -28,6 +28,15 @@ class spectrum():
         self.f.close()
         gc.collect()
 
+    def __repr__(self):
+        raw_date = self.date[:10]
+        try:
+            year, month, day = raw_date.split('-')
+            date = '-'.join([month, day, year])
+        except:
+            date = raw_date
+        return "BeSS Spectrum: {0} , {1}".format(self.obj_name, date)
+
     def getFName(self):
         """private."""
         name = ('').join(self.obj_name.split())
