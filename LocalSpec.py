@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import SimbadSearch as ss
 import gc
 
-class spectrum():
+class spectrum(object):
     """
     Creates spectrum object for local .fits file.
 

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import gc
 
 
-class spectrum():
+class spectrum(object):
     """Spectrum object initialized with file path."""
 
     def __init__(self, path):
