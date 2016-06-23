@@ -2,9 +2,7 @@ import os
 import pyfits
 
 
-def getNewName(
-        filename='/home/seth/Desktop/AstroML/Drive/Astro/BeSS/\
-        PsiPer_19780824_2_ama.fits'):
+def getNewName(filename):
     """private."""
     fi = pyfits.open(filename)
     head = fi[0].header

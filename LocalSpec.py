@@ -7,7 +7,8 @@ import SimbadSearch as ss
 import gc
 
 class spectrum():
-    """Creates spectrum object for local .fits file.
+    """
+    Creates spectrum object for local .fits file.
 
     Spectrum object initialized with file path.
     Contains get methods for
