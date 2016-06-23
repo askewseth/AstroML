@@ -1,3 +1,4 @@
+"""API for accessing files from tsethaskew.me."""
 import urllib2
 from BeautifulSoup import BeautifulSoup
 
@@ -35,8 +36,6 @@ def get_file_name(file_name, star_name, csv=True):
     except:
         float_array = [None]
     return float_array
-
-# print get_file_name('hd10516_2450709_60868.csv', 'phiper')
 
 
 def get_file_path(file_name, csv=True):
@@ -120,8 +119,6 @@ def get_all_files(star_name, csv=True):
     final_arr = zip(dates, holder)
     final_dic = {x: y for x, y in final_arr}
     return final_arr, final_dic
-
-# get_all_files('psiper')
 
 
 def test():
