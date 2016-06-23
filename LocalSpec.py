@@ -18,32 +18,31 @@ class spectrum():
         self.path = path
         self.f = pyfits.open(path)
         self.head = self.f[0].header
-        self.wlarr = self.getWLArr()
+        self.wlarr = self._getWLArr()
         self.data = self.f[0].data
         self.date = self.head['DATE-OBS']
         self.hjd = self.head['HJD']
-        self.fullwl = self.getFullWL()
-        self.getWLArr()
+        self.fullwl = self._getFullWL()
+        # self._getWLArr()
         self.vhel = self.head['VHELIO']
-        self.stararr = self.getStarArr()
-        self.obj_name = self.get_obj_name()
+        self.stararr = self._getStarArr()
+        self.obj_name = self._get_obj_name()
         self.f.close()
         gc.collect()
 
     def __repr__(self):
-        return "BeSS Spectrum: {0} , {1}".format(self.obj_name, self.date)
+        """Print Spectrum type along with star name and obs. date."""
+        return "Local Spectrum: {0} , {1}".format(self.obj_name, self.date)
 
-    def get_obj_name(self):
+    def _get_obj_name(self):
         obj_name = (' ').join(self.head['OBJNAME'].split())
         ss_name = ss.get_name(obj_name)
-        if ss_name != None:
+        if ss_name is not None:
             return ss_name
         else:
             return obj_name
 
-
-    def getWLArr(self):
-        """private."""
+    def _getWLArr(self):
         wat2 = []
         for key in self.head.keys():
             if 'WAT2' in key:
@@ -89,8 +88,7 @@ class spectrum():
         wlarr = [order, wli, step, nend]
         return wlarr
 
-    def getFullWL(self):
-        """private."""
+    def _getFullWL(self):
         larray = []
         for y in range(len(self.wlarr[0])):    # extra wl for end
             ls = []
@@ -100,8 +98,7 @@ class spectrum():
         # Correction for 6th order issues
         return larray
 
-    def getStarArr(self):
-        """private."""
+    def _getStarArr(self):
         d = self.date
         h = self.hjd
         v = self.vhel
@@ -113,7 +110,7 @@ class spectrum():
         rwl = None    # self.rwavelength
         return [d, h, v, bint, dint, rint, bwl, dwl, rwl]
 
-    def findHA(self, ha=6562, show=False):
+    def _findHA(self, ha=6562, show=False):
         """private."""
         haord = -1
         initialwl = [self.wlarr[1][x] for x in range(len(self.wlarr[1]))]
@@ -130,14 +127,14 @@ class spectrum():
         return haord
 
     def plot(self, order=-1, ha=False):
-        """private."""
+        """Plot all orders of the spectrum file."""
         if order == -1:
             # print len(self.wlarr[1])
             for x in range(len(self.wlarr[1])):
                 self.plotOrd(x)
 
     def plotOrd(self, i):
-        """private for plot."""
+        """Plot a given order of the spectrum file."""
         plt.plot(self.fullwl[i], self.data[i])
         title = str(i) + "th order of the spectrum from " + self.date
         plt.title(title)
@@ -146,8 +143,8 @@ class spectrum():
         plt.show()
 
     def plotHA(self):
-        """private for plot."""
-        i = self.findHA()
+        """Plot the H-Alpha line of the spectrum."""
+        i = self._findHA()
         plt.plot(self.fullwl[i], self.data[i])
         halphalinex = [6562 for x in range(25000)]
         halphaliney = [x for x in range(25000)]
@@ -162,9 +159,9 @@ class spectrum():
         plt.show()
 
     def convertCSV(self, order=-1, ha=True):
-        """Converts."""
+        """Converts to a CSV file."""
         if ha:
-            self.convertCSV(order=self.findHA(), ha=False)
+            self.convertCSV(order=self._findHA(), ha=False)
         csvdata = self.fullwl[order]
         sdata = self.data[order]
         newname = self.path[:-5] + '_ord' + str(order) + '_2' + '.csv'
@@ -177,22 +174,22 @@ class spectrum():
             writer.writerows(data)
 
     def convertCSVNew(self, order=-1, ha=True):
-            """Converts."""
-            if ha:
-                self.convertCSVNew(order=self.findHA(), ha=False)
-            csvdata = self.fullwl[order]
-            sdata = self.data[order]
-            name = ('').join(self.obj_name.split())
-            fname = name + '_' + str(self.hjd).split('.')[0] +\
-                '_' + str(self.hjd).split('.')[1]
-            data = []
-            print len(sdata), len(csvdata)
-            for x in range(len(csvdata)):
-                tmp = [csvdata[x], sdata[x]]
-                data.append(tmp)
-            with open(fname, 'w') as f:
-                writer = csv.writer(f, delimiter=',')
-                writer.writerows(data)
+        """Converts to a CSV file with the 'new' nameing convention."""
+        if ha:
+            self.convertCSVNew(order=self._findHA(), ha=False)
+        csvdata = self.fullwl[order]
+        sdata = self.data[order]
+        name = ('').join(self.obj_name.split())
+        fname = name + '_' + str(self.hjd).split('.')[0] +\
+            '_' + str(self.hjd).split('.')[1]
+        data = []
+        print len(sdata), len(csvdata)
+        for x in range(len(csvdata)):
+            tmp = [csvdata[x], sdata[x]]
+            data.append(tmp)
+        with open(fname, 'w') as f:
+            writer = csv.writer(f, delimiter=',')
+            writer.writerows(data)
 
         # name = ('').join(self.obj_name.split())
         # fname = name + '_' + str(self.hjd).split('.')[0] +\
@@ -212,46 +209,3 @@ class spectrum():
         # with open(newname, 'w') as f:
         #     writer = csv.writer(f, delimiter=',')
         #     writer.writerows(data)
-
-
-def test(dirpath='/home/seth/Desktop/AstroML/AllFiles/'):
-    """private."""
-    files = []
-    for f in os.listdir(dirpath):
-        if '.fits' in f:
-            files.append(dirpath + f)
-    specs = []
-    for f in sorted(files):
-        specs.append(spectrum(f))
-    return specs
-
-
-def main():
-    """private."""
-    specs = test()
-    for s in specs:
-        try:
-            s.plotHA()
-        except:
-            print(s.date)
-
-
-def do():
-    """private."""
-    os.chdir('/home/seth/Desktop/AstroML/Drive/Astro/TCO/')
-    names = []
-    for f in os.listdir(os.getcwd()):
-        if '.fits' in f:
-            tmp = '/home/seth/Desktop/AstroML/Drive/Astro/TCO/' + f
-            names.append(tmp)
-    specs = []
-    for n in names:
-        try:
-            tmp = spectrum(n)
-            specs.append(tmp)
-            print 'no prob'
-        except:
-            print 'ERROR: ', n
-    return specs
-
-# specs = test()
