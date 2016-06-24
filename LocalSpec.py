@@ -32,12 +32,11 @@ class spectrum(object):
         date = self.date.rjust(12)
         return "Local Spectrum: {0}, {1} ".format(obj_name, date)
 
-
     def _getDate(self):
         raw_date = self.head['DATE-OBS'][:10]
         months_list = ['Jan', 'Feb', 'March', 'April', 'May', 'June',
                        'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
-        months = {str(x+1).rjust(2,'0'): y for x, y in enumerate(months_list)}
+        months = {str(x+1).rjust(2, '0'): y for x, y in enumerate(months_list)}
         try:
             year, month, day = raw_date.split('-')
             date = '-'.join([months[str(month)], day, year])
@@ -54,6 +53,43 @@ class spectrum(object):
             return obj_name
 
     def _getWLArr(self):
+        wat2 = [key for key in self.head.keys() if 'WAT2' in key]
+        spec = [self.head[w] for w in wat2]
+        specstring = ''.join(spec)
+        specstring = filter(lambda x: x != "=", specstring)
+        specend = specstring.split('spec')
+        specend2 = [bit for bit in specend if bit[0].isdigit()]
+        final = [s.split(' ') for s in specend2]
+        for part in final:
+            if len(part[4]) > 1:
+                part.insert(4, 0)
+
+        def sixthordercorrection(final):
+            rel = final[5][5]
+            assert rel.count('.') > 1, "6th Order correction called wrong"
+            assert rel.count('.') == 2, "Assumption of max 2 '.'s was wrong"
+            pos = rel.rfind('.')
+            tokeep = rel[:pos]
+            toapp = rel[pos:]
+            final[5][5] = tokeep
+            final[5].insert(6, toapp)
+            return final
+
+        if final[5][5].count('.') > 1:
+            final = sixthordercorrection(final)
+        self.wltest = final
+        order = [int(float(fin[0])) for fin in final]
+        wli = [float(fin[5]) for fin in final]
+        step = [float(fin[6]) for fin in final]
+        end = [float(fin[7]) for fin in final]
+        newLast = (1149 * step[-1]) + wli[-1]
+        self.last = newLast
+        nendnum = int(max(end))
+        nend = [nendnum for x in range(len(order))]
+        wlarr = [order, wli, step, nend]
+        return wlarr
+
+    def _getWLArrOLD(self):
         # Get keys relevant to wavelengths containing 'WAT2'
         wat2 = []
         for key in self.head.keys():
@@ -103,7 +139,9 @@ class spectrum(object):
             toapp = final[5][5][pos:]
             final[5][5] = tokeep
             final[5].insert(6, toapp)
+
         self.wltest = final
+
         order = []
         wli = []
         step = []
@@ -121,6 +159,14 @@ class spectrum(object):
         return wlarr
 
     def _getFullWL(self):
+        wavelengths = zip(*self.wlarr)
+        wave_array = []
+        for _, start, step, end in wavelengths:
+            point = [start + (x * step) for x in range(end)]
+            wave_array.append(point)
+        return wave_array
+
+    def _getFullWLOLD(self):
         larray = []
         for y in range(len(self.wlarr[0])):    # extra wl for end
             ls = []
@@ -143,7 +189,17 @@ class spectrum(object):
         return [d, h, v, bint, dint, rint, bwl, dwl, rwl]
 
     def _findHA(self, ha=6562, show=False):
-        """private."""
+        _, initialwl, _, _ = self.wlarr
+        initialwl.append(self.last)
+        initialwl.append(ha)
+        initialwl.sort()
+        order = initialwl.index(ha)
+        if order is len(initialwl) - 1:
+            return -1
+        return order
+
+    def _findHAOLD(self, ha=6562, show=False):
+        """Find the order containing the HA line if it exists."""
         haord = -1
         initialwl = [self.wlarr[1][x] for x in range(len(self.wlarr[1]))]
         initialwl.append(self.last)
