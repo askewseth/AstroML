@@ -16,7 +16,8 @@ class spectrum(object):
         self.f = pyfits.open(path)
         self.head = self.f[0].header
         self.data = self.f[0].data
-        self.date = self.head['DATE-OBS']
+        # self.date = self.head['DATE-OBS']
+        self.date = self._getDate()
         self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
         try:
             self.hjd = self.head['HJD-MID']
@@ -29,7 +30,13 @@ class spectrum(object):
         gc.collect()
 
     def __repr__(self):
-        raw_date = self.date[:10]
+        """Print Spectrum type along with object name and obs. date."""
+        obj_name = self.obj_name.title().rjust(8)
+        date = self.date.rjust(12)
+        return "BeSS  Spectrum: {0}, {1} ".format(obj_name, date)
+
+    def _getDate(self):
+        raw_date = self.head['DATE-OBS'][:10]
         months_list = ['Jan', 'Feb', 'March', 'April', 'May', 'June',
                        'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
         months = {str(x+1).rjust(2,'0'): y for x, y in enumerate(months_list)}
@@ -38,7 +45,7 @@ class spectrum(object):
             date = '-'.join([months[str(month)], day, year])
         except:
             date = raw_date
-        return "< BeSS  Spectrum: {0}, {1} >".format(self.obj_name.title().rjust(8), date.rjust(12))
+        return date
 
     def getFName(self):
         """private."""

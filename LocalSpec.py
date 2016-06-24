@@ -7,12 +7,7 @@ import SimbadSearch as ss
 import gc
 
 class spectrum(object):
-    """
-    Creates spectrum object for local .fits file.
-
-    Spectrum object initialized with file path.
-    Contains get methods for
-    """
+    """Creates spectrum object for local .fits file."""
     def __init__(self, path):
         """Initalized with path to .fits file."""
         self.path = path
@@ -20,7 +15,8 @@ class spectrum(object):
         self.head = self.f[0].header
         self.wlarr = self._getWLArr()
         self.data = self.f[0].data
-        self.date = self.head['DATE-OBS']
+        self.date = self._getDate()
+
         self.hjd = self.head['HJD']
         self.fullwl = self._getFullWL()
         # self._getWLArr()
@@ -31,8 +27,14 @@ class spectrum(object):
         gc.collect()
 
     def __repr__(self):
-        """Print Spectrum type along with star name and obs. date."""
-        raw_date = self.date[:10]
+        """Print Spectrum type along with object name and obs. date."""
+        obj_name = self.obj_name.title().rjust(8)
+        date = self.date.rjust(12)
+        return "Local Spectrum: {0}, {1} ".format(obj_name, date)
+
+
+    def _getDate(self):
+        raw_date = self.head['DATE-OBS'][:10]
         months_list = ['Jan', 'Feb', 'March', 'April', 'May', 'June',
                        'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
         months = {str(x+1).rjust(2,'0'): y for x, y in enumerate(months_list)}
@@ -41,7 +43,7 @@ class spectrum(object):
             date = '-'.join([months[str(month)], day, year])
         except:
             date = raw_date
-        return "< Local Spectrum: {0}, {1} >".format(self.obj_name.rjust(8), date.rjust(12))
+        return date
 
     def _get_obj_name(self):
         obj_name = (' ').join(self.head['OBJNAME'].split())
@@ -52,15 +54,23 @@ class spectrum(object):
             return obj_name
 
     def _getWLArr(self):
+        # Get keys relevant to wavelengths containing 'WAT2'
         wat2 = []
         for key in self.head.keys():
             if 'WAT2' in key:
                 wat2.append(key)
+        # wat2 = [key for key in self.head.keys() if 'WAT2' in key]
+
+        # Get the values for those keys
         spec = []
         for w in wat2:
             spec.append(self.head[w])
+        # spec = [head[w] for w in wat2]
+
+        # Reorganize info for parsing
         specstring = ''.join(spec)
         specend = specstring.split('spec')
+        # specend2 = [bit for bit in specend if bit[0].isdigit()]
         specend2 = []
         for x in range(len(specend)):
             if specend[x][0] in ['0', '1', '2', '3', '4', '5', '6', '7',
@@ -74,7 +84,20 @@ class spectrum(object):
                 final[x].insert(4, 0)
         # Corrections to be done to final
         # Correction for 6th order 2nd decimal
+
+        # def sixthordercorrection(final):
+        #     rel = final[5][5]
+        #     assert rel.count('.') > 1, "6th Order correction called wrong"
+        #     assert rel.count('.') == 2, "Assumption of max 2 '.'s was wrong"
+        #     pos = rel.rfind('.')
+        #     tokeep = rel[:pos]
+        #     toapp = rel[pos:]
+        #     final[5][5] = tokeep
+        #     final[5].insert(6, toapp)
+        #     return final
+
         if final[5][5].count('.') > 1:
+            # final = sixthordercorrection(final)
             pos = final[5][5].rfind('.')
             tokeep = final[5][5][:pos]
             toapp = final[5][5][pos:]
@@ -145,7 +168,8 @@ class spectrum(object):
     def plotOrd(self, i):
         """Plot a given order of the spectrum file."""
         plt.plot(self.fullwl[i], self.data[i])
-        title = str(i) + "th order of the spectrum from " + self.date
+        title = "{0}: {1}, Order: {2}".format(self.obj_name, self.date, i)
+        title = str(i+1) + "th order of the spectrum from " + self.date
         plt.title(title)
         plt.xlabel('Wavelength (Angstroms)')
         plt.ylabel('Intensity')
