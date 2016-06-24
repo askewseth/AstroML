@@ -32,7 +32,16 @@ class spectrum(object):
 
     def __repr__(self):
         """Print Spectrum type along with star name and obs. date."""
-        return "Local Spectrum: {0} , {1}".format(self.obj_name, self.date)
+        raw_date = self.date[:10]
+        months_list = ['Jan', 'Feb', 'March', 'April', 'May', 'June',
+                       'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+        months = {str(x+1).rjust(2,'0'): y for x, y in enumerate(months_list)}
+        try:
+            year, month, day = raw_date.split('-')
+            date = '-'.join([months[str(month)], day, year])
+        except:
+            date = raw_date
+        return "< Local Spectrum: {0}, {1} >".format(self.obj_name.rjust(8), date.rjust(12))
 
     def _get_obj_name(self):
         obj_name = (' ').join(self.head['OBJNAME'].split())
