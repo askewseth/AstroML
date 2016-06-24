@@ -16,16 +16,15 @@ class spectrum(object):
         self.f = pyfits.open(path)
         self.head = self.f[0].header
         self.data = self.f[0].data
-        # self.date = self.head['DATE-OBS']
         self.date = self._getDate()
         self.obj_name = (' ').join(self.head['OBJNAME'].split()).lower()
         try:
             self.hjd = self.head['HJD-MID']
         except:
             self.hjd = self.head['MID-HJD']
-        self.fname = self.getFName()
+        self.fname = self._getFName()
         self.vhel = self.head['BSS_VHEL']
-        self.wls = self.getWLARR()
+        self.wls = self._getWLARR()
         self.f.close()
         gc.collect()
 
@@ -39,7 +38,7 @@ class spectrum(object):
         raw_date = self.head['DATE-OBS'][:10]
         months_list = ['Jan', 'Feb', 'March', 'April', 'May', 'June',
                        'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
-        months = {str(x+1).rjust(2,'0'): y for x, y in enumerate(months_list)}
+        months = {str(x+1).rjust(2, '0'): y for x, y in enumerate(months_list)}
         try:
             year, month, day = raw_date.split('-')
             date = '-'.join([months[str(month)], day, year])
@@ -47,25 +46,24 @@ class spectrum(object):
             date = raw_date
         return date
 
-    def getFName(self):
-        """private."""
+    def _getFName(self):
         name = ('').join(self.obj_name.split())
         fname = name + '_' + str(self.hjd).split('.')[0] +\
             '_' + str(self.hjd).split('.')[1]
         return fname
 
-    def getWLARR(self):
-        """private."""
+    def _getWLARR(self):
         wli = self.head['CRVAL1']
         step = self.head['CDELT1']
-        wls = []
-        for x in range(len(self.data)):
-            tmp = wli + (x * step)
-            wls.append(tmp)
+        # wls = []
+        # for x in range(len(self.data)):
+        #     tmp = wli + (x * step)
+        #     wls.append(tmp)
+        wls = [wli + (x * step) for x, _ in enumerate(self.data)]
         return wls
 
     def getWLRange(self):
-        """private."""
+        """Return the range of wavelengths in file as a string."""
         ini = str(math.floor(self.wls[0]))
         fin = str(math.ceil(self.wls[-1]))
         ret = ini + " - " + fin
@@ -73,7 +71,7 @@ class spectrum(object):
 
     def hasHA(self):
         """return true if spectrum contains ha line."""
-        wls = self.getWLARR()
+        wls = self._getWLARR()
         wli = int(math.floor(wls[1]))
         wlf = int(math.ceil(wls[-1]))
         if 6562 in range(wli, wlf):
@@ -97,12 +95,12 @@ class spectrum(object):
     def convertCSVNew(self):
         """convert csv with new naming convention."""
         newname = self.fname + '.csv'
-        data = []
-        wls = self.wls
-        d = self.data
-        for x in range(len(self.data)):
-            tmp = [wls[x], d[x]]
-            data.append(tmp)
+        data = zip(self.wls, self.data)
+        # wls = self.wls
+        # d = self.data
+        # for x in range(len(self.data)):
+        #     tmp = [wls[x], d[x]]
+        #     data.append(tmp)
         filepath_arr = self.path.split('/')
         dirpath = ('/').join(filepath_arr[:-1])
         os.chdir(dirpath)
