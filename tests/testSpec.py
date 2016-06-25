@@ -1,6 +1,7 @@
 """Module for testing Spectrum objects."""
 import os
-from . import Spectrum
+from .Spectrum import spectrum
+from tests import file_paths
 
 script_dir = os.path.dirname(__file__)
 rel_path = 'files/'
