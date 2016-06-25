@@ -97,7 +97,9 @@ def next_page(driver=None):
 
 query_page(driver)
 # sort_date_dec(driver)
-while True:
-    check_boxes(driver)
-    download(driver)
-    next_page(driver)
+
+if __name__ == '__main__':
+    while True:
+        check_boxes(driver)
+        download(driver)
+        next_page(driver)
